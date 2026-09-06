@@ -1,6 +1,5 @@
-# 生成物（build.py でいつでも作り直せる）
+# 生成物（build.py でいつでも作り直せる。build.py が無ければ自動でフォルダを作る）
 出力/
-!出力/.gitkeep
 
 # OS / エディタ
 .DS_Store
