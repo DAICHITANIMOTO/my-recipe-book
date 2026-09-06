@@ -1,0 +1,9 @@
+# 生成物（build.py でいつでも作り直せる）
+出力/
+!出力/.gitkeep
+
+# OS / エディタ
+.DS_Store
+*.swp
+.venv/
+__pycache__/
