@@ -1,86 +1,81 @@
 # マイレシピ本
 
 外食で美味しかった料理を「再現レシピ」として1ファイルずつ残し、
-表紙・目次つきの1冊（PDF / Word）にまとめられる個人リポジトリ。
+写真つきのHTMLサイト（＋必要ならPDF/Word）にまとめる個人プロジェクト。
 
 ## フォルダ構成
 
 ```
 my-recipe-book/
-├── README.md                        このファイル
-├── CLAUDE.md                        Claudeが写真からレシピを作るときの手順
-├── セットアップ_スマホから写真を送る.md   初回の設定手順（トークン＋ショートカット）
-├── レシピ雛形.md                     新しいレシピを手で書くときのコピー元
+├── README.md                このファイル
+├── CLAUDE.md                Claudeが写真からレシピを作るときの手順
+├── レシピ雛形.md             新しいレシピを手で書くときのコピー元
 ├── recipes/
-│   ├── 2026-09-06_ガスパチョ.md      レシピ本体（1料理1ファイル）
-│   ├── inbox/                        スマホから送った写真の受信箱（処理後は空になる）
-│   └── 画像/
-│       └── 2026-09-06_ガスパチョ.jpg  料理写真（Markdownと同じ名前）
+│   ├── 2026-09-06_ガスパチョ.md   レシピ本体（1料理1ファイル）
+│   ├── inbox/                     スマホから上げた写真の受信箱（処理後は空になる）
+│   └── 画像/                      料理写真（Markdownと同じ名前）
 ├── build/
-│   ├── build.py                     全レシピを結合してPDF/Wordを生成
-│   ├── サイト生成.py                 全レシピからHTMLサイトを docs/ に生成
-│   └── 自動レシピ生成手順.md          夜間エージェントが従う手順書
-├── docs/                            公開サイト（GitHub Pagesの配信元。自動更新される）
-└── 出力/                            PDF/Word（gitには入れない。build.pyで作り直せる）
+│   ├── build.py             全レシピを結合してPDF/Wordを生成
+│   ├── サイト生成.py         全レシピからHTMLサイトを docs/ に生成
+│   └── 自動レシピ生成手順.md  夜間エージェントが従う手順書
+├── docs/                    公開サイト（GitHub Pagesの配信元。自動更新）
+└── 出力/                    PDF/Word（gitには入れない。build.pyで作り直せる）
 ```
-
-## 見る（HTMLサイト）
-
-写真をアップすると、夜間エージェントがレシピ生成のついでに `docs/` のサイトも作り直す。
-GitHub Pages を「main ブランチ / `docs` フォルダ」に設定すると、常に最新のレシピ本が
-URLで見られる（スマホ可・アカウント不要）。検索避け（noindex ＋ robots.txt）済み。
-パートナーにはこのURLを渡す。
 
 ファイル名は **`日付_料理名.md`** 形式（例: `2026-09-06_ガスパチョ.md`）。
 先頭が日付なので、並べると自動的に訪問日順になる。
 
+## しくみ
+
+```
+スマホで写真をアップ（GitHubの Upload files ページ → recipes/inbox/）
+      ↓
+毎晩4時、クラウドの定期エージェントが inbox の写真を1枚ずつ:
+  ・写真を見てレシピの下書きを作成（材料・作り方は推定）
+  ・画像を recipes/画像/ へ移動
+  ・build/サイト生成.py で docs/ のサイトを作り直す
+  ・main に commit & push
+      ↓
+GitHub Pages が docs/ を配信 → URLでいつでも最新版が見られる
+```
+
 ## レシピの追加方法
 
-### 方法1：スマホのショートカットで写真を送る（おすすめ）
+### 方法1：スマホから写真をアップ（おすすめ）
 
-外食のあと、写真アプリの「共有」→ ショートカット「レシピ本に送る」の2タップで、
-写真が `recipes/inbox/` に上がる。毎晩1回クラウドの定期エージェントが
-`build/自動レシピ生成手順.md` に従って下書きレシピ（材料・作り方の推定まで入る）を作り、
-GitHubへ push する。翌朝 `git pull` すればレシピが増えている。
+1. Safariでブックマークを開く：
+   `https://github.com/DAICHITANIMOTO/my-recipe-book/upload/main/recipes/inbox`
+2. 「choose your files」→「フォトライブラリ」→ 料理写真を選ぶ（複数可）
+3. 下にスクロールして緑の「Commit changes」
 
-初回セットアップ（GitHubトークン発行＋ショートカット作成、15分）は
-[`セットアップ_スマホから写真を送る.md`](セットアップ_スマホから写真を送る.md) を参照。
+料理名・店名は入力不要（写真から推定）。翌朝までにレシピとサイトへ自動反映される。
 
 ### 方法2：PCで手書きする
 
 1. `レシピ雛形.md` をコピーして `recipes/日付_料理名.md` にリネーム
 2. 料理写真を `recipes/画像/日付_料理名.jpg` に置く（同じ名前にする）
 3. frontmatter（title / date / restaurant / category）と各見出しを埋める
-4. `git add -A && git commit -m "レシピ追加: 料理名" && git push`
+4. `python3 build/サイト生成.py`（サイト更新）
+5. `git add -A && git commit -m "レシピ追加: 料理名" && git push`
 
-## レシピ本のビルド方法
+## 見る
 
-### 初回だけ：ツールを入れる
+### HTMLサイト（メイン）
+
+GitHub Pages を「main ブランチ / `docs` フォルダ」に設定すると、
+`https://daichitanimoto.github.io/my-recipe-book/` で最新のレシピ本が見られる。
+スマホ可・アカウント不要。検索避け（noindex ＋ robots.txt）済み。
+パートナーにはこのURLを渡す。
+
+### PDF / Word（手渡し用）
 
 ```
-brew install pandoc typst
+brew install pandoc typst      # 初回だけ
+python3 build/build.py         # 出力/マイレシピ本.pdf ＋ .docx
 ```
 
-（`typst` はPDF生成用。無くてもWord(.docx)は作れる）
-
-### ビルド
-
-```
-python3 build/build.py           # PDFとWordの両方
-python3 build/build.py --format pdf
-python3 build/build.py --format docx
-```
-
-生成物は `出力/マイレシピ本.pdf` / `出力/マイレシピ本.docx`。
-表紙（タイトル＋生成日）と目次が自動で付く。
-
-写真がまだ無いレシピは、その箇所が「（写真未登録: ...）」と表示される。
-あとで `recipes/画像/` に同じ名前で写真を置けば、次のビルドから反映される。
-
-## パートナーと共有する
-
-`出力/マイレシピ本.pdf` をそのままAirDrop / LINE / メール等で渡す。
-リポジトリ自体は非公開のまま（Web公開はしない）。
+表紙・目次が自動で付く。写真が無いレシピは「（写真未登録）」と表示され、
+あとで `recipes/画像/` に同名で写真を置けば次のビルドから反映される。
 
 ## 材料・作り方について
 
