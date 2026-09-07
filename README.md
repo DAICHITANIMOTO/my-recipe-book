@@ -28,27 +28,34 @@ my-recipe-book/
 ## しくみ
 
 ```
-スマホで写真をアップ（GitHubの Upload files ページ → recipes/inbox/）
+スマホのGitHubアプリで「新しいIssue」に料理写真を添付して送信
       ↓
-毎晩4時、クラウドの定期エージェントが inbox の写真を1枚ずつ:
-  ・写真を見てレシピの下書きを作成（材料・作り方は推定）
-  ・画像を recipes/画像/ へ移動
+毎晩4時、クラウドの定期エージェントが:
+  ・未処理のIssueと recipes/inbox/ の写真を1枚ずつ見る
+  ・レシピの下書きを作成（材料・作り方は推定）
+  ・画像を recipes/画像/ へ配置
   ・build/サイト生成.py で docs/ のサイトを作り直す
-  ・main に commit & push
+  ・main に commit & push、処理済みIssueを閉じる
       ↓
 GitHub Pages が docs/ を配信 → URLでいつでも最新版が見られる
 ```
 
 ## レシピの追加方法
 
-### 方法1：スマホから写真をアップ（おすすめ）
+### 方法1：GitHubアプリのIssueに写真を添付（おすすめ）
 
-1. Safariでブックマークを開く：
-   `https://github.com/DAICHITANIMOTO/my-recipe-book/upload/main/recipes/inbox`
-2. 「choose your files」→「フォトライブラリ」→ 料理写真を選ぶ（複数可）
-3. 下にスクロールして緑の「Commit changes」
+1. スマホの **GitHubアプリ**（ログインは1回きり）で `my-recipe-book` を開く
+2. **Issues** タブ → **＋（New issue）**
+3. タイトルは空でも可（入れるなら料理名）。本文の画像ボタンから**料理写真を添付**（複数可）
+4. **Submit**（Create）
 
-料理名・店名は入力不要（写真から推定）。翌朝までにレシピとサイトへ自動反映される。
+料理名・店名は入力不要（写真から推定）。翌朝までにレシピとサイトへ自動反映され、Issueは自動で閉じる。
+ホーム画面に `https://github.com/DAICHITANIMOTO/my-recipe-book/issues/new` を置くと一発で開ける。
+
+### 方法1のかわり：写真をinboxに直接アップ
+
+`https://github.com/DAICHITANIMOTO/my-recipe-book/upload/main/recipes/inbox` を開いて
+「choose your files」→ フォトライブラリ → 写真 → 「Commit changes」でも同じ結果になる。
 
 ### 方法2：PCで手書きする
 
